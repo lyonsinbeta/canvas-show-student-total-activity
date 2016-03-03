@@ -7,38 +7,39 @@
  */
 
 $(function() {
+  var domain = window.location.hostname;
+  var userID = ENV.current_user_id;
+  var courseID = ENV.course.id;
+  var jsonURL = "https://" + domain + "/api/v1/users/" + userID + "/enrollments";
+  var time = "";
 
-  if ($.inArray("student", ENV.current_user_roles) > 0) {
+  if (window.location.pathname == "/courses/" + courseID + "/users") {
+    if ($.inArray("student", ENV.current_user_roles) > 0) {
 
-    var domain = window.location.hostname;
-    var userID = ENV.current_user_id;
-    var courseID = ENV.course.id;
-    var jsonURL = "https://" + domain + "/api/v1/users/" + userID + "/enrollments";
-    var time = "";
+      $(function() {
+        $("table.roster thead tr th:nth-last-child(2)").after('<th scope="col">Time Active</th>');
+      });
 
-    $(function() {
-      $("table.roster thead tr th:nth-last-child(2)").after('<th scope="col">Time Active</th>');
-    });
+      var getTime = $.getJSON(jsonURL, function(data) {
 
-    var getTime = $.getJSON(jsonURL, function(data) {
+        for (var i = 0; i < data.length; i++) {
 
-      for (var i = 0; i < data.length; i++) {
+          if (data[i].course_id == courseID) {
 
-        if (data[i].course_id == courseID) {
-
-          time = data[i].total_activity_time;
+            time = data[i].total_activity_time;
+            }
           }
-        }
-        
-      // Convert total_activity_time from seconds to HH:MM:SS
-      time = new Date(time * 1000).toUTCString().match(/(\d\d:\d\d:\d\d)/)[0];
 
-    });
+        // Convert total_activity_time from seconds to HH:MM:SS
+        time = new Date(time * 1000).toUTCString().match(/(\d\d:\d\d:\d\d)/)[0];
 
-    var updateTable = getTime.done(function() {
+      });
+
+      var updateTable = getTime.done(function() {
 
       $("tr#user_46 td:last").html(time);
 
-    });
+      });
+    }
   }
- });
+});
