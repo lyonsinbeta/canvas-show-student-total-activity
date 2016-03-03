@@ -16,7 +16,9 @@ $(function() {
     var jsonURL = "https://" + domain + "/api/v1/users/" + userID + "/enrollments";
     var time = "";
 
-    $("table.roster thead tr th:nth-last-child(2)").after('<th scope="col">Time Active</th>');
+    $(function() {
+      $("table.roster thead tr th:nth-last-child(2)").after('<th scope="col">Time Active</th>');
+    });
 
     var getTime = $.getJSON(jsonURL, function(data) {
 
